@@ -6,6 +6,9 @@ RNPinnedCertValidator simplifies validating ["pinned" SSL certificates](https://
 
 1. Put your trusted certificate in your bundle.
 2. Create a validator with `-initWithCertificatePath:`.
+
+## If using NSURLConnection (iOS6 or earlier)
+
 3. Create an `NSURLConnection` with your object as a delegate.
 4. In `-connection:willSendRequestForAuthenticationChallenge:`, call `[validator validateChallenge:challenge]`.
 
@@ -14,6 +17,18 @@ RNPinnedCertValidator simplifies validating ["pinned" SSL certificates](https://
 willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
   RNPinnedCertValidator *validator = [[RNPinnedCertValidator alloc] initWithCertificatePath:kPathToCerFile];
   [validator validateChallenge:challenge];
+}
+```
+## If using NSURLSession (iOS7 or later)
+
+3. Create an `NSURLSession` with your object as a delegate.
+4. In `URLSession:didReceiveChallenge:completionHandler:`, call `[validator validateChallenge:challenge completionHandler:completionHandler]` passing the completion handler through.
+
+```objc
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+                                             completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+  RNPinnedCertValidator *validator = [[RNPinnedCertValidator alloc] initWithCertificatePath:kPathToCerFile];
+  [validator validateChallenge:challenge completionHandler:completionHandler];
 }
 ```
 
